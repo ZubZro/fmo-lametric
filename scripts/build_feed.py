@@ -58,10 +58,14 @@ def main():
     upcoming.sort(key=lambda x: x["when"])
     arrivals = [f for f in upcoming if f["kind"] == "A"][:3]
     departures = [f for f in upcoming if f["kind"] == "D"][:3]
+    # Keep the three nearest arrivals and three nearest departures, then
+    # merge them into one timeline sorted strictly by their effective time.
+    selected = arrivals + departures
+    selected.sort(key=lambda x: x["when"])
     frames = []
-    for label, group in (("AN", arrivals), ("AB", departures)):
-        for f in group:
-            frames.append({"text": f"{label} {f['number']} {f['city']} {f['when']:%H:%M}", "duration": 6000})
+    for f in selected:
+        label = "AN" if f["kind"] == "A" else "AB"
+        frames.append({"text": f"{label} {f['number']} {f['city']} {f['when']:%H:%M}", "duration": 6000})
     if not frames:
         frames = [{"text": "FMO: Keine kommenden Fluege"}]
 
